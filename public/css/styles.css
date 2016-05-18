@@ -1,0 +1,11 @@
+.logo-text {
+    text-transform: capitalize;
+    color: rgb(254,152,15);
+    font-family: 'Lato', sans-serif;
+    font-size: 30px;
+}
+.text-logo {
+    font-family: 'Lato', sans-serif;
+    color: #9d9c99 !important;
+}
+
