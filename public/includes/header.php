@@ -65,7 +65,11 @@
                         <div class="col-sm-8">
                             <div class="shop-menu pull-right">
                                 <ul class="nav navbar-nav">
-                                    <li><a href="#"><i class="fa fa-user"></i> Account</a></li>
+                                    <?php
+                                    if(isset($_SESSION['user_id'])):
+                                        echo "<li><a href='admin'><i class='fa fa-user'></i> Account</a></li>";  
+                                    endif;
+                                    ?>
                                     <li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
                                     <li><a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a></li>
                                     <li><a href="login.php"><i class="fa fa-lock"></i> Login</a></li>

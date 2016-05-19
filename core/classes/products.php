@@ -44,4 +44,34 @@ DELIMETER;
         }
     }
     
+    public function show_recent_product() {
+        global $database;
+        $query = $database->query("SELECT * FROM products ORDER BY product_id DESC LIMIT 4");
+        while($row = $query->fetch_array(MYSQLI_ASSOC)):
+            $this->product_name  = $row['product_name'];
+            $this->product_desc  = $row['product_desc'];
+            $this->product_price = $row['product_price'];
+            if(empty($row['product_image'])) {
+                $this->product_image = "http://placehold.it/50x50";
+            } else {
+                $this->product_image = "../images/products/".$row['product_image'];
+            }
+echo <<<DELIMETER
+        <li class="item">
+            <div class="product-img">
+                <img src="$this->product_image" alt="Product Image">
+            </div>
+            <div class="product-info">
+                <a href="javascript:void(0)" class="product-title">$this->product_name
+                    <span class="label label-warning pull-right">&euro;$this->product_price</span></a>
+                <span class="product-description">
+                    $this->product_desc
+                </span>
+            </div>
+        </li>   
+DELIMETER;
+        endwhile;
+
+    }
+    
 }

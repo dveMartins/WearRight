@@ -22,7 +22,7 @@ class Database {
     
     if($this->connection->connect_errno) {
         
-        die("Database connection failed" . $this->connection->connect_error);
+        die("Database connection failed" . $this->connection->error);
     }
     
    }
@@ -38,7 +38,7 @@ class Database {
    public function confirm_query($result) {
        
        if(!$result) {
-           die("Query Failed: " . $this->connection->connect_error);
+           die("Query Failed: " . $this->connection->error);
        }
        
    }

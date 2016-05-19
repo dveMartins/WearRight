@@ -18,11 +18,11 @@ $products = new Product();
                     </ol>
                     <div class="carousel-inner">                     
                         <?php 
-                            $slider_active = $database->query("SELECT * FROM products LIMIT 1");
-                            $slider = $products->get_product();                           
+                            $slider_active = $database->query("SELECT * FROM home_slide LIMIT 1");
+                            $slider = $database->query("SELECT * FROM home_slide");                           
                                 while($row = $slider_active->fetch_array(MYSQLI_NUM)) {
                                     while($row1 = $slider->fetch_array(MYSQLI_ASSOC)): 
-                                    if($row[0] == $row1['product_id']) {
+                                    if($row[0] == $row1['slider_id']) {
                                         $active = "active";
                                     } else {
                                         $active = "";
@@ -32,11 +32,11 @@ $products = new Product();
                             <div class="col-sm-6">
                                 <h1><span>W</span>ear-<span>R</span>ight</h1>
                                 <h2>Where To Shop Right</h2>                               
-                                <p><?php echo $row1['product_desc']; ?> </p>
+                                <p><?php echo $row1['slider_desc']; ?> </p>
                                 <button type="button" class="btn btn-default get">Get it now</button>
                             </div>
                             <div class="col-sm-6">
-                                <img src="<?php echo $row1['product_image']; ?>" class="img-responsive" alt="" />
+                                <img src="images/products/<?php echo $row1['slider_image']; ?>" class="img-responsive" alt="" />
                             </div>
                         </div>                     
                         <?php endwhile; } ?>                      

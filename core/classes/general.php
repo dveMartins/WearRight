@@ -1,7 +1,7 @@
 <?php
 
 class General {
-    protected function redirect($address) {
+    public function redirect($address) {
         header("Location: $address");
     }
     public function count_table_row($table) {
