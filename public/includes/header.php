@@ -1,5 +1,4 @@
 <?php require_once '../core/config.php'; ?>
-<?php ob_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>

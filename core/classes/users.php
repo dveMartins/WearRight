@@ -1,5 +1,6 @@
 <?php
 class Users extends General{
+    public  $user_id;
     public  $first_name;
     public  $last_name;
     public  $username;
@@ -8,9 +9,14 @@ class Users extends General{
     public  $user_category;
     public  $user_image;
     public  $date_registered;
+    public  $about_user;
     private $signed_in;
+    public  $validation_msg = array(
+            "create_user_error"  => "",
+            "create_user_success" => ""
+    );
     
-    protected function get_all_users() {
+    private function get_all_users() {
         global $database;
         return $database->query("SELECT * FROM users");
     }
@@ -112,12 +118,133 @@ USER;
                 "email"           => $row['email'],
                 "password"        => $row['password'],
                 "user_category"   => $row['user_category'],
+                "about_user"      => $row['about_user'],
                 "user_image"      => $row['user_image'],
                 "date_registered" => $row['date_registered']
             );
             return $user_details;
         }
     }
+    
+    public function display_all_user_in_admin() {
+        $users = $this->get_all_users();
+        while($row = $users->fetch_array(MYSQLI_ASSOC)) {
+        $date = $this->convert_date($row['date_registered']);
+echo <<<USERS
+            
+    <tr class='clickable-row' data-href='single_user.php?user_id={$row['user_id']}'>
+       <td>{$row['user_id']}</td>
+       <td>{$row['username']}</td>
+       <td>{$row['first_name']}</td>
+       <td>{$row['last_name']}</td>  
+       <td><img class="img-bordered img-responsive img-circle" width="65" height="80" src="../images/users/{$row['user_image']}"></td>
+       <td><span class="label label-danger">{$row['user_category']}</span></td>
+       <td>{$row['email']}</td>
+       <td>{$date}</td> 
+    </tr>   
+           
+USERS;
+        }
+    }
+    
+    
+    /*********** Create User in Admin **************/
+    
+    public function create_user() {
+        global $database;
+        if(!empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['user_category']) && $_POST['password'] == $_POST['cpassword']) {
+        $this->first_name    = $database->escape_string($_POST['first_name']);
+        $this->last_name     = $database->escape_string($_POST['last_name']);
+        $this->username      = $database->escape_string($_POST['username']);
+        $this->password      = $database->escape_string($_POST['password']);
+        $this->user_category = $database->escape_string($_POST['user_category']);
+        $this->email         = $database->escape_string($_POST['email']);
+        $this->about_user    = $database->escape_string($_POST['about_user']);
+        $this->user_image    = $database->escape_string($_POST['user_image']);
+        
+        //hash password
+        $this->password = $this->encrypt_pass($this->password);
+        
+        if($_FILES['user_image']['error'] == 0) {        
+            $this->user_image = htmlspecialchars($_FILES['user_image']['name']);
+        } else {
+            $this->user_image = "user-default.png";
+        }
+        
+        $query = $database->query("INSERT INTO users (first_name, last_name, username, email, password, user_category, about_user, user_image) "
+                . "VALUES ('{$this->first_name}', '{$this->last_name}', '{$this->username}', '{$this->email}', "
+                . "'{$this->password}', '{$this->user_category}', '{$this->about_user}', '{$this->user_image}')");
+                
+        $this->validation_msg['create_user_success'] = "User successfully created";
+        
+        return $query;
+        
+        } else {
+            $this->validation_msg['create_user_error'] = "Error! Please fill in the required fields correctly";
+        }
+        
+    }
+    
+        
+    /*********** Update Users *********************/
+    
+    public function update_user($row) {
+        global $database;
+        $this->first_name    = $database->escape_string($_POST['first_name']);
+        $this->last_name     = $database->escape_string($_POST['last_name']);
+        $this->username      = $database->escape_string($_POST['username']);
+        $this->user_category = $database->escape_string($_POST['user_category']);
+        $this->email         = $database->escape_string($_POST['email']);
+//        $this->about_user    = trim($database->escape_string($_POST['about_user']));
+        
+        
+        
+        //Check for empty inputs
+        
+        if($_FILES['user_image']['error'] == 0) {        
+            $this->user_image = htmlspecialchars($_FILES['user_image']['name']);
+        } else {
+            $this->user_image = $row['user_image'];
+        }
+        
+        $empty = "";
+        
+        switch ($empty):
+            case $_POST['first_name']:
+                    $this->first_name    = $row['first_name'];
+            case $_POST['last_name']:
+                    $this->last_name     = $row['last_name'];
+            case $_POST['username']:
+                    $this->username      = $row['username'];
+            case $_POST['user_category']:
+                    $this->user_category = $row['user_category'];
+            case $_POST['email']:
+                    $this->email         = $row['email'];
+                    break;
+        endswitch;
+        
+        $query = $database->query("UPDATE users SET "
+                . "first_name     = '{$this->first_name}', "
+                . "last_name      = '{$this->last_name}', "
+                . "username       = '{$this->username}', "
+                . "user_category  = '{$this->user_category}', "
+                . "email          = '{$this->email}', "
+                . "about_user     = '{$database->escape_string($_POST['about_user'])}', "
+                . "user_image     = '{$this->user_image}' "
+                . "WHERE user_id  = '{$this->user_id}'");
+                
+        return $query;
+    }
+    
+    
+     /************** Delete Users *******************/
+    
+    public function delete_user() {
+        global $database;
+        $query = $database->query("DELETE FROM users WHERE user_id = {$this->user_id}");
+        return $query;
+    }
+ 
     
 }
 

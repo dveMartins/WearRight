@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 require_once 'classes/db_wear_right.php';
 require_once 'classes/general.php'; 

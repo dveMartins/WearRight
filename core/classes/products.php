@@ -10,7 +10,7 @@ class Product extends General{
     public $product_quantity;
     public $product_image;
     
-    public function get_product() {
+    private function get_product() {
         global $database;    
         $query = $database->query("SELECT * FROM products");
         return $query;
@@ -48,6 +48,7 @@ DELIMETER;
         global $database;
         $query = $database->query("SELECT * FROM products ORDER BY product_id DESC LIMIT 4");
         while($row = $query->fetch_array(MYSQLI_ASSOC)):
+            $this->product_id    = $row['product_id'];
             $this->product_name  = $row['product_name'];
             $this->product_desc  = $row['product_desc'];
             $this->product_price = $row['product_price'];
@@ -62,7 +63,7 @@ echo <<<DELIMETER
                 <img src="$this->product_image" alt="Product Image">
             </div>
             <div class="product-info">
-                <a href="javascript:void(0)" class="product-title">$this->product_name
+                <a href="single_product.php?p_id={$this->product_id}" class="product-title">$this->product_name
                     <span class="label label-warning pull-right">&euro;$this->product_price</span></a>
                 <span class="product-description">
                     $this->product_desc
@@ -74,4 +75,126 @@ DELIMETER;
 
     }
     
+    /*************** Get all Products according to product IDs **************/
+    
+    public function get_all_prod_by_id() {
+        global $database;
+        $query = $database->query("SELECT * FROM products WHERE product_id = '{$this->product_id}'");
+        return $query;
+    }
+    
+    /************** Get all categories for Edit Product page ***************/
+    
+    public function show_all_category($prod_cat) {
+        global $database;
+        $cat = $database->query("SELECT * FROM categories");
+        while($row = $cat->fetch_array(MYSQLI_ASSOC)):
+            $selected = $row['category_name'] == $prod_cat ? 'selected' : '';
+            echo "<option $selected> {$row['category_name']} </option>";
+        endwhile;
+    }
+    
+    /************** Create Product ***************/
+    
+    public function create_product() {
+        global $database;
+        $this->product_name     = $database->escape_string($_POST['product_name']);
+        $this->product_category = $database->escape_string($_POST['product_category']);
+        $this->product_desc     = $database->escape_string($_POST['product_desc']);
+        $this->product_price    = $database->escape_string($_POST['product_price']);
+        $this->product_quantity = $database->escape_string($_POST['product_quantity']);
+        
+        if($_FILES['product_image']['error'] == 0) {        
+            $this->product_image = htmlspecialchars($_FILES['product_image']['name']);
+        } else {
+            $this->product_image = "default-product.png";
+        }
+        
+        $query = $database->query("INSERT INTO products (product_name, product_desc, product_category, product_price, product_quantity, product_image) "
+                . "VALUES ('{$this->product_name}', '{$this->product_desc}', '{$this->product_category}', '{$this->product_price}', "
+                . "'{$this->product_quantity}', '{$this->product_image}')");
+                
+        return $query;
+    }
+    
+    
+    /*********** Update Products *********************/
+    
+    public function update_product($row) {
+        global $database;
+        $this->product_name     = $database->escape_string($_POST['product_name']);
+        $this->product_category = $database->escape_string($_POST['product_category']);
+        $this->product_desc     = $database->escape_string($_POST['product_desc']);
+        $this->product_price    = $database->escape_string($_POST['product_price']);
+        $this->product_quantity = $database->escape_string($_POST['product_quantity']);
+        
+        
+        
+        //Check for empty inputs
+        
+        if($_FILES['product_image']['error'] == 0) {        
+            $this->product_image = htmlspecialchars($_FILES['product_image']['name']);
+        } else {
+            $this->product_image = $row['product_image'];
+        }
+        
+        $empty = "";
+        
+        switch ($empty):
+            case $_POST['product_name']:
+                    $this->product_name     = $row['product_name'];
+            case $_POST['product_category']:
+                    $this->product_category = $row['product_category'];          
+            case $_POST['product_price']:
+                    $this->product_price    = $row['product_price'];
+            case $_POST['product_quantity']:
+                    $this->product_quantity = $row['product_quantity'];
+                    break;
+        endswitch;
+        
+        $query = $database->query("UPDATE products SET "
+                . "product_name     = '{$this->product_name}', "
+                . "product_desc     = '{$database->escape_string($_POST['product_desc'])}', "
+                . "product_category = '{$this->product_category}', "
+                . "product_price    = '{$this->product_price}', "
+                . "product_quantity = '{$this->product_quantity}', "
+                . "product_image    = '{$this->product_image}' "
+                . "WHERE product_id = '{$this->product_id}'");
+                
+        return $query;
+    }
+    
+    /************** Delete Products *******************/
+    
+    public function delete_product() {
+        global $database;
+        $query = $database->query("DELETE FROM products WHERE product_id = {$this->product_id}");
+        return $query;
+    }
+   
+    
+    /************* Display all Products in Admin ************/
+    
+    public function display_all_prod_in_admin() {
+        $products   = $this->get_product();
+        while($row = $products->fetch_array(MYSQLI_ASSOC)) { 
+            $prod_desc = substr($row['product_desc'], 0, 50);
+echo <<<PRODUCTS
+            
+    <tr class='clickable-row' data-href='single_product.php?p_id={$row['product_id']}'>
+       <td>{$row['product_id']}</td>
+       <td>{$row['product_name']}</td>
+       <td><span class="label label-info">{$row['product_quantity']}</span></td>
+       <td><img class="img-bordered img-responsive img-circle" width="65" height="80" src="../images/products/{$row['product_image']}"></td>
+       <td><span class="label label-danger">{$row['product_category']}</span></td>
+       <td>{$row['product_price']}</td>
+       <td>{$prod_desc}...</td> 
+    </tr>   
+           
+PRODUCTS;
+            
+        }
+    }
+    
+          
 }
