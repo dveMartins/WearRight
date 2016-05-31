@@ -45,8 +45,10 @@ class Database {
    
    public function escape_string($string) {
        
-       $escaped_string = $this->connection->real_escape_string(htmlspecialchars($string));
-       return $escaped_string;
+       $string = $this->connection->real_escape_string($string);
+       $string = htmlspecialchars($string);
+       $string = stripslashes($string);
+       return $string;
        
    }
 

@@ -1,4 +1,6 @@
-<?php require_once '../core/config.php'; ?>
+<?php 
+require_once '../core/config.php'; 
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -69,8 +71,18 @@
                                         echo "<li><a href='admin'><i class='fa fa-user'></i> Account</a></li>";  
                                     endif;
                                     ?>
-                                    <li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
-                                    <li><a href="cart.html"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+                                    <li><a href="checkout.php"><i class="fa fa-crosshairs"></i> Checkout</a></li>
+                                    <li>
+                                        <a href="shopping_cart.php"><i class="fa fa-shopping-cart"></i>
+                                            
+                                                <?php 
+                                                if(isset($_SESSION['item_quantity'])) {
+                                                    echo "<span class='label label-warning'>{$_SESSION['item_quantity']}</span>";
+                                                }
+                                                ?>
+                                            </span>
+                                        </a>
+                                    </li>
                                     <li><a href="login.php"><i class="fa fa-lock"></i> Login</a></li>
                                 </ul>
                             </div>

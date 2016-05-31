@@ -16,6 +16,12 @@ class Product extends General{
         return $query;
     }
     
+    public function get_prod_by_id($prod_id) {
+        global $database;
+        $query = $database->query("SELECT * FROM products WHERE product_id = $prod_id");
+        return $query;
+    }
+    
     public function display_all_product() {
         $products = $this->get_product();
         while ($prod = $products->fetch_array(MYSQLI_ASSOC)) {
@@ -33,7 +39,8 @@ class Product extends General{
                         <div class="overlay-content">
                             <h2>&euro; {$prod['product_price']}</h2>
                             <p>{$prod['product_name']}</p>
-                            <a href="#" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                            <a href="product_details.php?p_id={$prod['product_id']}" class="btn btn-default add-to-cart"><i class="fa fa-eye"></i>View</a><br>
+                            <a href="cart.php?add={$prod['product_id']}" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
                         </div>
                     </div>
                 </div>
@@ -83,6 +90,20 @@ DELIMETER;
         return $query;
     }
     
+    public function get_prod_items_by_id() {
+        global $database;
+        $query = $this->get_all_prod_by_id();
+        while($row = $query->fetch_array(MYSQLI_ASSOC)) {
+            $this->product_id = $row['product_id'];
+            $this->product_name = $row['product_name'];
+            $this->product_desc = $row['product_desc'];
+            $this->product_category = $row['product_category'];
+            $this->product_price = $row['product_price'];
+            $this->product_quantity = $row['product_quantity'];
+            $this->product_image = $row['product_image'];
+        }
+    }
+    
     /************** Get all categories for Edit Product page ***************/
     
     public function show_all_category($prod_cat) {
@@ -130,7 +151,7 @@ DELIMETER;
         
         
         
-        //Check for empty inputs
+        //Check if image was uploaded
         
         if($_FILES['product_image']['error'] == 0) {        
             $this->product_image = htmlspecialchars($_FILES['product_image']['name']);
@@ -138,9 +159,15 @@ DELIMETER;
             $this->product_image = $row['product_image'];
         }
         
-        $empty = "";
+         //check empty for textarea
         
-        switch ($empty):
+        if(isset($_POST['product_desc']) && empty($_POST['product_desc'])) {
+            $this->product_desc = $row['product_desc'];
+        }
+        
+        //Check for empty inputs
+        
+        switch (empty($_POST)):
             case $_POST['product_name']:
                     $this->product_name     = $row['product_name'];
             case $_POST['product_category']:
@@ -154,7 +181,7 @@ DELIMETER;
         
         $query = $database->query("UPDATE products SET "
                 . "product_name     = '{$this->product_name}', "
-                . "product_desc     = '{$database->escape_string($_POST['product_desc'])}', "
+                . "product_desc     = '{$this->product_desc}', "
                 . "product_category = '{$this->product_category}', "
                 . "product_price    = '{$this->product_price}', "
                 . "product_quantity = '{$this->product_quantity}', "
@@ -196,5 +223,26 @@ PRODUCTS;
         }
     }
     
-          
+    /************* Show related products in product description page ******************/
+    
+    public function show_related_prod($category) {
+        global $database;
+        $query = $database->query("SELECT * FROM products WHERE product_category = '{$category}'");
+        while($row = $query->fetch_array(MYSQLI_ASSOC)) {
+    echo <<<DELIMETER
+        <div class="col-sm-3">
+            <div class="product-image-wrapper">
+                <div class="single-products">
+                    <div class="productinfo text-center">
+                        <img src="images/products/{$row['product_image']}" alt="{$row['product_name']}" />
+                        <h2>&euro;{$row['product_price']}</h2>
+                        <p>{$row['product_name']}</p>
+                        <a href="product_details.php?p_id={$row['product_id']}" class="btn btn-default add-to-cart"><i class="fa fa-eye"></i>View</a>
+                    </div>
+                </div>
+            </div>
+        </div>  
+DELIMETER;
+        }
+    }
 }

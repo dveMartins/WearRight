@@ -899,7 +899,6 @@ h2.title {
   transition: height 500ms ease 0s;
   width: 100%;
   display: block;
-  opacity:;
 }
 
 .single-products:hover .product-overlay {
@@ -1783,10 +1782,10 @@ h2.title {
 .update{
     margin-left: 40px;
 }
-
+/*
 .check_out {
   margin-left: 20px
-}
+}*/
 
 
 

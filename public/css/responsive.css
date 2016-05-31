@@ -333,7 +333,8 @@ ul.sub-menu{
 }
 
 .shop-menu .nav.navbar-nav {
-	margin-left: 0;
+	margin-left: -50px;
+        text-align: center;
 }
 
 .btn-group>.btn-group:last-child>.btn:first-child{

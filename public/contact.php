@@ -4,7 +4,7 @@
         <div class="row">    		
             <div class="col-sm-12">    			   			
                 <h2 class="title text-center">Contact <strong>Us</strong></h2>    			    				    				
-                <div id="gmap" class="contact-map">
+                <div id="googleMap" class="contact-map">
                 </div>
             </div>			 		
         </div>    	
@@ -35,7 +35,7 @@
             <div class="col-sm-4">
                 <div class="contact-info">
                     <h2 class="title text-center">Contact Info</h2>
-                    <address>
+                    <address class="text-center">
                         <p>Wear-Right Inc.</p>
                         <p>123 .4454 87600 Kaufbeuren</p>
                         <p>Bayern, DE</p>
